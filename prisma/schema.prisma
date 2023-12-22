@@ -7,14 +7,55 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
-  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+  provider = "mongodb"
+  url = env("MONGODB_PRISMA_URL") // uses connection pooling
 }
 
+enum Role {
+  voter
+  admin
+}
+
+
 model User {
-  id        Int     @id @default(autoincrement())
-  email     String  @unique
-  password  String
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  date_of_birth String
+  password      String
+  role          Role      @default(voter)
+  votes         Votes[]
+  polls         Poll[]
+}
+
+model Poll {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  subject     String
+  creator_id  String   @db.ObjectId
+
+  options     Option[]
+  Votes       Votes[]
+  creator     User     @relation(fields: [creator_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Option {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  name   String
+  pollId String @db.ObjectId
+
+  votes Votes[]
+  poll  Poll    @relation(fields: [pollId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Votes {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String @db.ObjectId
+  PollId   String @db.ObjectId
+  optionId String @db.ObjectId
+
+  user   User   @relation(fields: [userId], references: [id])
+  poll   Poll   @relation(fields: [PollId], references: [id])
+  option Option @relation(fields: [optionId], references: [id])
 }

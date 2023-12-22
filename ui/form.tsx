@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import LoadingDots from "@/components/loading-dots";
+import LoadingDots from "ui/loading-dots";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -40,6 +40,8 @@ export default function Form({ type }: { type: "login" | "register" }) {
             body: JSON.stringify({
               email: e.currentTarget.email.value,
               password: e.currentTarget.password.value,
+              dob: e.currentTarget.dob.value.toString(),
+              name: e.currentTarget.full_name.value
             }),
           }).then(async (res) => {
             setLoading(false);
@@ -89,6 +91,53 @@ export default function Form({ type }: { type: "login" | "register" }) {
           className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
         />
       </div>
+      {type === 'register' && <>
+      <div>
+        <label
+          htmlFor="confirm_password"
+          className="block text-xs text-gray-600 uppercase"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirm_password"
+          name="confirm_password"
+          type="password"
+          required
+          className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
+        />
+      </div>
+      <div>
+        <label
+          htmlFor="full_name"
+          className="block text-xs text-gray-600 uppercase"
+        >
+          Name
+        </label>
+        <input
+          id="full_name"
+          name="full_name"
+          type="text"
+          required
+          className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
+        />
+      </div>
+      <div>
+        <label
+          htmlFor="dob"
+          className="block text-xs text-gray-600 uppercase"
+        >
+          Date of Birth
+        </label>
+        <input
+          id="dob"
+          name="dob"
+          type="date"
+          required
+          className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
+        />
+      </div>
+      </>}
       <button
         disabled={loading}
         className={`${
